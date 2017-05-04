@@ -30,14 +30,20 @@
 
 12. Sprite组件机制中，css样式有2层，一层是外部组件的css样式，另外一层是组件内部根节点的css样式，由于模板组件具有封装的特点，所以外层样式的优先级高于内部根节点的样式。
 
+13. 组件虽然可以帮助我们解决代码重复问题，但是不建议在一个页面里面大量使用，尽量保证一个页面里面不要超过20个封装的组件，否者在android上页面打开会有效率问题。比如在页面里面放30个button组件（在list控件里面无所谓），页面打开可能就会比较慢。简单的场景下需要重复使用某一个布局时，尽量用box进行布局，如果实在不行，可以考虑动态布局，需要用的时候在加载，不要一次性都写在页面里面。
+
 
 <h2 id="cid_0">Sprite组件开发步骤</h2>  
 
-**第一步，新建模板文件xx.component**
+下面我以封装一个button控件为例，来说明组件的开发步骤：
+
+**第一步，新建模板文件mybutton.component**
+
+由于官方组件里面已经有button组件了，所以重新换个名字mybutton。
 
 在新建模板组件文件前，先创建一个模板组件目录，该目录用来存放组件文件、组件样式还有一些图片资源。
 
-新建模板文件时，模板组件的名称必须和模板文件名保持一致，比如我们想做一个button组件，那么文件名就必须是button.component。另外整个应用全局组件名称不能相同。
+新建模板文件时，模板组件的名称必须和模板文件名保持一致，比如我们想做一个mybutton组件，那么文件名就必须是mybutton.component。另外整个应用全局组件名称不能相同。
 
 模板文件框架内容如下：
 
@@ -53,12 +59,12 @@
     <![CDATA[
 
     //定义一个模板类
-    var Component = function () {
+    var MYbutton = function () {
       //这里定义一些变量
 
     };
 
-    Component.prototype = {
+    MYbutton.prototype = {
       //模板组件创建的时候执行
       created: function () { },
       //属性变更回调函数
@@ -70,7 +76,7 @@
 
     }
 
-    module.exports = Component;
+    module.exports = MYbutton;
     ]]>
   </script>
   <style>
@@ -104,15 +110,91 @@ attrChanged：一般用于外部对组件模板进行属性动态修改时，当
 styleChanged：一般用于外部对组件模板样式进行动态修改时，会进入该回调函数。如果样式直接写在组件标签上面，该函数不会执行。
 
 orientationChanged：函数为页面横竖屏切换回调函数,该函数用于页面横竖屏时通知组件内部处理相关逻辑，回调函数参数：
-> orientation：当前屏幕方向,字符串枚举类型,【portrait, landscape】,portrait:竖屏,landscape:横屏
-> screenWidth：当前窗口绘制区域宽度；
-> screenHeight：当前窗口绘制区域高度
+
+> orientation：当前屏幕方向,字符串枚举类型,【portrait, landscape】,portrait:竖屏,landscape:横屏  
+> 
+> screenWidth：当前窗口绘制区域宽度； 
+>  
+> screenHeight：当前窗口绘制区域高度  
 
 
 模板组件对外接口主要通过&lt;script&gt;节点中定义的module.exports对象来标识，这个千万不能少。
 
+然后在home.js的入口处，引用该组件：
+
+```javascript
+require.config({
+    jsPaths: {
+    },
+    componentPaths: {
+        "mybuttonUI": "res:sprite_component/mybutton/mybutton.component"
+    },
+    cssPaths: {
+     
+    }
+});
+```
+
+到时候，我们在页面里面引用的时候就可以写require("mybuttonUI");
+
 
 **第二步：设计组件**
+
+根据[组件开发设计六大原则](https://gitdocument.exmobi.cn/sprite-senior/component-principle.html)设计组件，定义好组件的属性，样式，方法和事件。
+
+**属性：**
+
+> builtInClass 使用内置样式
+> 
+> value：按钮文字（可以通过js修改）；
+> 
+> tip：小气泡数字（可以通过js修改）；
+> 
+> licon；按钮上的图片（可以通过js修改）；
+> 
+> ricon；按钮上的图片（可以通过js修改）；
+> 
+> readonly:只读（可以通过js修改）；
+> 
+> loading:加载等待，取值true和false （可以通过js修改）；
+
+**样式：**
+
+> color:按钮文字颜色（可以通过js修改）；
+> 
+> color-click:按钮文字点击颜色 默认白色；
+> 
+> background-color：按钮背景颜色 （可以通过js修改）；
+> 
+> background-color-click：按钮背景点击色；
+> 
+> border-color:边框颜色（可以通过js修改）；
+> 
+> border-color-click：按钮边框点击色；
+> 
+> tip-color：小气泡字体颜色 （可以通过js修改）；
+> 
+> tip-background-color：小气泡背景色 （可以通过js修改）；
+> 
+> font-size: 按钮字体大小（可以通过js修改）；
+> 
+> licon-width: 按钮左侧图片宽度（可以通过js修改）；
+> 
+> licon-height: 按钮左侧图片高度（可以通过js修改）；
+> 
+> ricon-width: 按钮右侧图片宽度（可以通过js修改）；
+> 
+> ricon-height: 按钮右侧图片高度（可以通过js修改）；
+
+**方法：**
+
+> click(): 模拟按钮点击方法，可以js模拟点击按钮效果；
+
+**事件：**
+
+> hange事件：监听button属性修改；
+
+
 
 
 **第三步：组件样式布局**
@@ -133,19 +215,765 @@ orientationChanged：函数为页面横竖屏切换回调函数,该函数用于�
 </box>
 ```
 
-样式可以提取到css文件中进行引用。
+样式可以提取到css文件中进行引用，这里写的是样式文件的相对路径，该相对路径基于xx.component文件。
+
+<img src="image/component_1.png"/>
 
 ```html
  <style>     
-        @import url("button.layout.css");
-        @import url("button.color.css");
+        @import url("mybutton.layout.css");
+        @import url("mybutton.color.css");
 </style>
 ```
 
+mybutton.layout.css 文件内容：
+
+```css
+.flex1{
+	flex:1;
+}
+
+.margin4{
+	margin:4;
+}
+
+.radius4{
+	border-radius:4;
+}
+
+.row-flex-center{
+	flex-direction:row;
+	justify-content:center;	
+	align-items:center;
+}
+
+.column-flex-center{
+	flex-direction:column;
+	justify-content:center;
+	align-items:center;
+}
+.button{
+	justify-content:center;
+	flex-wrap:wrap;
+	flex-direction:row;	
+	height:40;
+	padding:0 8 0 8;
+}
+
+.button-image{
+	
+	width:24;
+	height:24;
+	margin:0 4 0 4;
+	align-self: center;
+}
+
+.button-rimage{
+	
+	width:24;
+	height:24;
+	margin:0 4 0 4;
+	align-self: center;
+}
+
+.button-text{
+	text-align:center;
+	text-overflow:ellipsis;
+	singleline:true;
+	line-space:0;
+	padding: 0;
+	font-size:16;
+	
+}
+
+.round{
+	width:40;
+	height:40;
+	border-radius:20;	
+}
+
+/**********  tip样式 开始 ************/
+.tip{	
+	flex-direction:row;
+	align-items:center;
+	height:20;
+	
+	justify-content:center;
+	border-radius:10;
+	margin:0 0 0 8;
+	align-self: center;
+
+}
+.tip-outline{	
+	flex-direction:row;
+	align-items:center;
+	height:20;
+	
+	justify-content:center;
+	border-radius:10;
+	margin:0 0 0 8;
+	align-self: center;
+}
+
+.tip-text{
+
+	text-align:center;	
+	line-space:0dp;
+	font-size:12;
+	margin:0 6.5 0 6.5;
+}
+/**********  tip样式 结束 ************/
+```
+
+mybutton.color.css 文件内容：
+
+```
+.button{
+	background-color:#549FF7;
+	border-color:#549FF7;	
+}
+
+.tip{
+	background-color:rgba(0, 0, 0, 0.15);
+}
+
+.tip-text{	
+	color:#ffffff;
+}
+
+.tip-outline{
+	background-color:red;
+}
+
+.button-text{
+	color:#ffffff;
+}
+.button-click{
+	background-color:#295b9d;
+	border-color:#295b9d;	
+}
+
+.submit{
+  background-color: #88d038;
+  border-color:#88d038;
+ /* 基于按钮自定义样式*/
+
+  border-color-click:#669d2a;
+  background-color-click:#669d2a;
+}
+
+.submit-click{
+	border-color:#669d2a;
+	background-color:#669d2a;
+}
+.cancel{
+	background-color:#dd524d;
+	border-color:#dd524d;
+	/*自定义样式*/
+	border-color-click:#a63e3a;
+	background-color-click:#a63e3a;	
+}
+.cancel-click{
+	border-color:#a63e3a;
+	background-color:#a63e3a;
+}
+
+.disable{		
+	background-color:#d9d9d9;
+}
 
 
-如果马上要在页面看效果可以直接在uixml页面写&lt;button /&gt;，
+.outline{
+	border-width:1dp;	
+	background-color:transparent;
+	/*基于按钮自定义样式*/
+	color:#549FF7;
+	color-click:#ffffff;
+	tip-background-color:red;
 
+}
+.outline-text{	
+	color:#549FF7;	
+}
+
+.outline-submit-text{
+	color:#669d2a;	
+}
+.outline-cancel-text{
+	color:#dd524d;	
+}
+
+.outline-disable{
+	border-color:#d9d9d9;
+	border-width:1dp;
+	background-color:transparent;
+    /*自定义样式*/
+	color:#d9d9d9;	
+}
+.outline-disable-text{
+	color:#d9d9d9;
+}
+```
+
+如果马上要在页面看效果可以直接在uixml页面写&lt;mybutton /&gt;，
 
 
 **第四步：组件js逻辑完善**
+
+组件核心js部分如下：
+
+```html
+<page>
+    <module>
+       <![CDATA[
+    
+    ]]>
+    </module>
+    <script>
+        <![CDATA[
+        var document = require("Document");
+        var window = require("Window");
+        var time = require("Time");
+        var screenWidth = window.getScreenWidth();
+        var console = require("Console");
+        var ui = require("UI");
+        function aniCallBack() {
+
+        }
+
+        var Button = function () {
+            this.box = null;
+            this.text = null;
+            this.tiptext = null;
+            this.tipbox = null;
+            this.btn_image = null;
+            this.btn_rimage = null;
+            this.fontText = null;
+            this.loadingimage = null;
+            this.btn_content = null;
+
+            this.backgroundColor = "#549FF7";
+            this.backgroundClickColor = "#295b9d";
+            this.borderColor = "#549FF7";
+            this.borderClickColor = "#295b9d";
+            this.color = "#ffffff";
+            this.colorClick = "#ffffff";
+            this.tipColor = "#ffffff";
+            this.tipbackgroundColor = "red";
+            this.fontSize = "16";
+            this.liconWidth = "24";
+            this.liconHeight = "24";
+            this.riconWidth = "24";
+            this.riconHeight = "24";
+
+            this.readonly = "false";
+            this.value = "";
+            this.tip = "0";
+            this.licon = "";
+            this.ricon = "";
+
+            this.loading = "false";
+            this.taginit = true;
+            this.classStyle = "";
+            this.pathLocation = "";
+
+        };
+
+
+
+        Button.prototype = {
+
+            created: function () {
+                //这里是得到组件所在的uixml页面的绝对路径目录
+                this.pathLocation = document.getPathLocation();
+
+                this.box = this.getElement("btn");
+                this.text = this.getElement("text");
+                this.tiptext = this.getElement("tiptext");
+                this.tipbox = this.getElement("tipbox");
+                this.btn_image = this.getElement("btn_image");
+                this.btn_rimage = this.getElement("btn_rimage");
+                this.loadingimage = this.getElement("loadingimage");
+
+                this.btn_content = this.getElement("btn_content");
+                if (this.getClassStyle() != null) {
+                    this.classStyle = this.getClassStyle();
+                }
+
+                this.init();
+                var copythis = this;
+                this.box.on("touchDown", function (e, param) {
+
+                    if (copythis.readonly == "false") {
+                        var jsonData = {};
+                        var aniAry = new Array();
+                        var jsonAni1 = {};
+                        jsonAni1.delay = 0;
+                        jsonAni1.duration = 200;
+                        jsonAni1.curve = "linear";
+                        jsonAni1.props = {};
+                        jsonAni1.props.backgroundColor = copythis.backgroundClickColor;
+                        aniAry.push(jsonAni1);
+                        jsonData.animators = aniAry;
+                        copythis.box.startAnimator(jsonData, function () {
+
+
+                        });
+                        copythis.text.setStyle("color", copythis.colorClick);
+                        copythis.box.setStyle("border-color", copythis.borderClickColor);
+                        copythis.box.setStyle("opacity", "1");
+                        copythis.box.releaseAnimator();
+                    }
+
+                });
+
+                this.box.on("touchUp", function (e) {
+                    if (copythis.readonly == "false") {
+
+                        var jsonData = {};
+                        var aniAry = new Array();
+                        var jsonAni1 = {};
+                        jsonAni1.delay = 0;
+                        jsonAni1.duration = 200;
+                        jsonAni1.curve = "linear";
+                        jsonAni1.props = {};
+                        jsonAni1.props.backgroundColor = copythis.backgroundColor;
+                        aniAry.push(jsonAni1);
+                        jsonData.animators = aniAry;
+                        copythis.box.startAnimator(jsonData, function () {
+                            //copythis.box.releaseAnimator();
+
+                        });
+                        copythis.text.setStyle("color", copythis.color);
+                        copythis.box.setStyle("opacity", "1");
+                        copythis.box.setStyle("border-color", copythis.borderColor);
+                        //这里释放动画，以便后续可以对该控件进行刷新
+                        copythis.box.releaseAnimator();
+                    }
+
+                });
+                this.box.on("touchCancel", function (e) {
+                    if (copythis.readonly == "false") {
+
+                        var jsonData = {};
+                        var aniAry = new Array();
+                        var jsonAni1 = {};
+                        jsonAni1.delay = 0;
+                        jsonAni1.duration = 200;
+                        jsonAni1.curve = "linear";
+                        jsonAni1.props = {};
+                        jsonAni1.props.backgroundColor = copythis.backgroundColor;
+                        aniAry.push(jsonAni1);
+                        jsonData.animators = aniAry;
+                        copythis.box.startAnimator(jsonData, aniCallBack);
+                        copythis.text.setStyle("color", copythis.color);
+                        copythis.box.setStyle("opacity", "1");
+                        copythis.box.setStyle("border-color", copythis.borderColor);
+
+                        //这里释放动画，以便后续可以对该控件进行刷新
+                        copythis.box.releaseAnimator();
+
+                    }
+
+                });
+
+            },
+            init: function () {
+
+                this.taginit = true;
+
+
+                if (this.getAttr("builtInClass") != null) {
+
+                    if ((this.getAttr("builtInClass")).indexOf("outline") > -1 && (this.getAttr("builtInClass")).indexOf("submit") < 0 && (this.getAttr("builtInClass")).indexOf("cancel") < 0) {
+                        this.setClassStyle(this.classStyle + " outline", this);
+                        this.classStyle = this.classStyle + " outline";
+                    }
+
+                    if ((this.getAttr("builtInClass")).indexOf("submit") > -1) {
+
+                        this.setClassStyle(this.classStyle + " submit", this);
+
+                        this.classStyle = this.classStyle + " submit";
+
+                    }
+                    else if ((this.getAttr("builtInClass")).indexOf("submit") > -1 && this.getAttr("builtInClass").indexOf("outline") > -1) {
+
+                        this.setClassStyle(this.classStyle + " submit outline outline-submit-text", this);
+
+                        this.classStyle = this.classStyle + "  submit outline outline-submit-text";
+                    }
+
+                    if ((this.getAttr("builtInClass")).indexOf("cancel") > -1) {
+
+                        this.setClassStyle(this.classStyle + " cancel", this);
+                        this.classStyle = this.classStyle + "  cancel";
+                    }
+
+                    else if ((this.classStyle).indexOf("cancel") > -1 && this.classStyle.indexOf("outline") > -1) {
+                        this.setClassStyle(this.classStyle + " cancel outline outline-cancel-text", this);
+                        this.classStyle = this.classStyle + "   cancel outline outline-cancel-text";
+                    }
+                }
+
+
+                this.setAttr("readonly", this.getAttr("readonly"));
+
+                //设置按钮的value值
+                this.setAttr("value", this.getAttr("value"));
+
+                this.setStyle("color", this.getStyle("color"));
+                this.setStyle("color-click", this.getStyle("color-click"));
+
+                this.setStyle("background-color", this.getStyle("background-color"));
+
+                this.setStyle("background-color-click", this.getStyle("background-color-click"));
+
+                this.setStyle("border-color-click", this.getStyle("border-color-click"));
+                this.setStyle("border-color", this.getStyle("border-color"));
+                this.setStyle("licon-width", this.getStyle("licon-width"));
+                this.setStyle("licon-height", this.getStyle("licon-height"));
+                this.setStyle("ricon-width", this.getStyle("ricon-width"));
+                this.setStyle("ricon-height", this.getStyle("ricon-height"));
+                this.setAttr("tip", this.getAttr("tip"));
+                this.setAttr("licon", this.getAttr("licon"));
+                this.setAttr("ricon", this.getAttr("ricon"));
+                this.setStyle("tip-background-color", this.getStyle("tip-background-color"));
+                this.setStyle("tip-color", this.getStyle("tip-color"));
+                this.setStyle("font-size", this.getStyle("font-size"));
+                this.setAttr("loading", this.getAttr("loading"));
+                if (this.getStyle("width") != null) {
+                    this.btn_content.setStyle("flex", "1");
+                    this.text.setStyle("flex", "1");
+                }
+
+                if (this.getStyle("flex") != null) {
+
+                    this.btn_content.setStyle("flex", "1");
+                    this.text.setStyle("flex", "1");
+                }
+
+                if (this.getParent() != null) {
+                    if (this.getParent().getStyle("flex-direction") != "row") {
+
+                        this.btn_content.setStyle("flex", "1");
+                        //this.text.setStyle("flex", "1");
+                    }
+                }
+                this.taginit = false;
+            },
+            click: function () {
+                var copythis = this;
+                this.fire("touchDown");
+                time.setTimeout(function () {
+                    copythis.fire("touchUp");
+
+                    copythis.fire("click");
+
+
+                }, 200);
+
+
+            },
+            //属性变更回调函数
+            attrChanged: function (attrName, attrValue) {
+                var changetag = false;
+                if (this.taginit == false) {
+
+                    if (this.getAttr(attrName) != this[attrName] && this.getAttr(attrName) != null) {
+                        //this.fire("change");
+                        changetag = true;
+                    }
+
+                }
+
+
+                if (attrName == "value") {
+                    if (attrValue != null) {
+                        this.value = attrValue;
+                    }
+
+                    this.text.setText(this.value);
+                    if (this.taginit == false) {
+                        this.refresh();
+                    }
+                }
+
+                if (attrName == "readonly") {
+
+                    if (attrValue != null) {
+                        this.readonly = attrValue;
+                    }
+                    if (this.readonly == "true") {
+
+                        var clasststr = this.classStyle;
+                        // console.log("this.classStyle:"+this.classStyle); 
+
+                        if (clasststr.indexOf("outline") > -1) {
+                            clasststr = this.classStyle + " outline-disable";
+                        }
+                        else {
+                            clasststr = this.classStyle + " " + "disable";
+                        }
+
+                        this.setClassStyle(clasststr, this);
+                    }
+
+
+
+                }
+
+                if (attrName == "tip") {
+                    if (attrValue != null) {
+                        this.tip = attrValue;
+                        this.tiptext.setText(attrValue);
+                        this.tipbox.setStyle("display", "block");
+                    }
+                    else {
+
+                        this.tipbox.setStyle("display", "none");
+
+                    }
+                    if (this.taginit == false) {
+                        this.refresh();
+                    }
+                }
+
+
+                if (attrName == "licon") {
+
+                    if (attrValue != null) {
+                        if (attrValue.indexOf("res:") > -1 || attrValue.indexOf("http://") > -1 || attrValue.indexOf("https://") > -1) {
+                            this.licon = attrValue;
+                        }
+                        else {
+                            this.licon = this.pathLocation + "/" + attrValue;
+                        }
+
+                        this.btn_image.setAttr("src", this.licon);
+                        this.btn_image.setStyle("display", "block");
+                    }
+                    else {
+
+                        this.btn_image.setStyle("display", "none");
+
+                    }
+
+                    if (this.taginit == false) {
+                        this.refresh();
+                    }
+                }
+
+                if (attrName == "ricon") {
+
+                    if (attrValue != null) {
+                        //通过js进来的图片地址，都认为是基于uixml页面的相对路径，符合开发者思维
+                        if (attrValue.indexOf("res:") > -1 || attrValue.indexOf("http://") > -1 || attrValue.indexOf("https://") > -1) {
+                            this.ricon = attrValue;
+                        }
+                        else {
+                            this.ricon = this.pathLocation + "/" + attrValue;
+                        }
+                        this.btn_rimage.setAttr("src", this.ricon);
+                        this.btn_rimage.setStyle("display", "block");
+                    }
+                    else {
+                        this.btn_rimage.setStyle("display", "none");
+                    }
+
+                    if (this.taginit == false) {
+                        this.refresh();
+                    }
+                }
+
+                if (attrName == "loading") {
+                    if (attrValue != null) {
+                        this.loading = attrValue;
+                    }
+                    if (this.loading == "true") {
+                        this.loadingimage.setStyle("display", "block");
+                    }
+                    else {
+                        this.loadingimage.setStyle("display", "none");
+                    }
+
+                    if (this.taginit == false) {
+                        this.refresh();
+                    }
+                }
+
+                if (changetag == true) {
+                    this.fire("change");
+                }
+            },
+            //样式变更回调函数
+            styleChanged: function (styleName, styleValue) {
+                var copythis = this;
+                if (styleName == "color") {
+                    if (styleValue != null) {
+                        this.color = styleValue;
+                    }
+
+                    // console.log("this.color:"+this.color);
+                    this.text.setStyle("color", this.color);
+                }
+
+
+
+
+                if (styleName == "color-click") {
+                    if (styleValue != null) {
+                        this.colorClick = styleValue;
+                    }
+                }
+
+
+                if (styleName == "background-color") {
+                    if (styleValue != null) {
+                        this.backgroundColor = styleValue;
+
+                    }
+
+                    if (this.taginit == false) {
+
+                        time.setTimeout(function () {
+                            //console.log("修改了颜色");
+                            //通过js修改颜色会受动画延迟影响，这里做个延迟
+                            copythis.box.setStyle("background-color", copythis.backgroundColor);
+                        }, 250);
+
+
+                    }
+                    else {
+                        this.box.setStyle("background-color", this.backgroundColor);
+                    }
+
+                }
+                if (styleName == "background-color-click") {
+                    if (styleValue != null) {
+                        this.backgroundClickColor = styleValue;
+                    }
+                }
+
+                if (styleName == "border-color-click") {
+                    if (styleValue != null) {
+                        this.borderClickColor = styleValue;
+                    }
+                }
+                if (styleName == "border-color") {
+                    if (styleValue != null) {
+                        this.borderColor = styleValue;
+                    }
+
+                    this.box.setStyle("border-color", this.borderColor);
+                }
+
+
+                if (styleName == "tip-background-color") {
+                    if (styleValue != null) {
+                        this.tipbackgroundColor = styleValue;
+                    }
+                    this.tipbox.setStyle("background-color", this.tipbackgroundColor);
+
+                }
+                if (styleName == "tip-color") {
+                    if (styleValue != null) {
+                        this.tipColor = styleValue;
+                    }
+                    this.tiptext.setStyle("color", this.tipColor);
+
+                }
+
+                if (styleName == "font-size") {
+                    if (styleValue != null) {
+                        this.fontSize = styleValue;
+                    }
+                    this.text.setStyle("font-size", this.fontSize);
+                    if (this.taginit == false) {
+
+                        this.refresh();
+                    }
+                }
+
+                if (styleName == "licon-width") {
+
+                    if (styleValue != null) {
+                        this.liconWidth = styleValue;
+                    }
+                    this.btn_image.setStyle("width", this.liconWidth);
+                    if (this.taginit == false) {
+
+                        this.refresh();
+                    }
+                }
+
+                if (styleName == "licon-height") {
+
+                    if (styleValue != null) {
+                        this.liconHeight = styleValue;
+                    }
+                    this.btn_image.setStyle("height", this.liconHeight);
+                    if (this.taginit == false) {
+
+                        this.refresh();
+                    }
+                }
+
+                if (styleName == "ricon-height") {
+
+                    if (styleValue != null) {
+                        this.riconHeight = styleValue;
+                    }
+                    this.btn_rimage.setStyle("height", this.riconHeight);
+                    if (this.taginit == false) {
+
+                        this.refresh();
+                    }
+                }
+
+                if (styleName == "ricon-width") {
+
+                    if (styleValue != null) {
+                        this.riconWidth = styleValue;
+                    }
+                    this.btn_rimage.setStyle("height", this.riconWidth);
+
+                    if (this.taginit == false) {
+
+                        this.refresh();
+                    }
+                }
+            }
+        }
+        module.exports = Button;
+
+    ]]>
+    </script>
+    <style>
+        @import url("button.layout.css");
+        @import url("button.color.css");
+    </style>
+    <ui>
+        <box id="btn" class="button">
+            <image id="btn_image" class="button-image" style="display:none" />
+            <box id="btn_content" class="row-flex-center">
+                <image id="loadingimage" style="width:15;height:15;display:none" class="button-image" src="loading.gif" />
+                <text id="text" class="button-text"></text>
+            </box>
+            <box id="tipbox" class="tip" style="display:none">
+                <text id="tiptext" class="tip-text">9</text>
+            </box>
+            <image id="btn_rimage" class="button-image" style="display:none" />
+        </box>
+    </ui>
+</page>
+```
+
+上述代码中的this指的就是当前组件，通过this.getElement("xx")可以得到组件内部的布局元素，this也表示当前组件类，可以得到自定义的组件类里面的变量和方法。
+
+注意代码中有很多var copythis = this的写法，是为了在某些监听事件里面用，因为一点进入事件里面，那么this就表示的是当前监听事件的控件对象了。
+
+在上次代码中还自定义了一个init方法，其目的是为了处理组件上面的属性和样式，由于styleChanged和attrChange，只能通过组件js赋值才会生效，所以自己在init里面通过this.setStyle和this.setAttr人为的触发一下styleChanged和attrChange，让里面的逻辑可以执行一次。否者可能要写两遍相同的逻辑。
+
+另外还需要注意的是，由于在处理组件初始布局的时候，不能做刷新操作，但是styleChanged和attrChange里面在某些时候必须要刷新布局，所以定义了一个this.taginit用来标识是第一次初始化组件还是后来通过外部js调用的。
+
