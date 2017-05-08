@@ -113,9 +113,8 @@ xxx.component中写：
 
 页面中对应写法：
 
-```
+```html
 <button_fh />
-
 <button_my />
 ```
 
