@@ -6,7 +6,7 @@
 
 开发Sprite组件之前，务必先了解这几个注意事项，避免走弯路。
 
-1.	由于组件名和组件文件名一致，所以同一个应用中模板组件名必须唯一，而且路径也必须唯一，比如buttom.component模板文件，对应的组件标签是button，那么在整个应用中就只能有一个button组件的文件，不同路径下也不能有相同的组件名称，如果有其他相同组件需要另起名字比如buttonFH。
+1.	由于默认情况下组件名和组件文件名一致，所以同一个应用中尽量保证模板组件名必须唯一，而且路径也必须唯一，比如buttom.component模板文件，对应的组件标签是button，那么在整个应用中就最好只有一个button组件的文件，如果有其他相同组件最好另起名字比如buttonFH。
 
 2.	在模板内部构建模板布局的时候不能在created方法里面执行document.refresh()布局刷新操作，如非要执行可以使用定时，因为模板构建的时候整个界面都在布局中，如果执行了document.refresh() 可能会影响其他控件布局展示。
 
@@ -104,7 +104,7 @@ xxx.component中写：
 
 自定义标签名，如果开发者想引用不同路径下的相同标签名，可以为标签定义个别名，比如buttonFH/button.component 和buttonMY/button.component 都有button组件，想同时使用，需要定义一个别名，否者会有冲突。
 
-对于require的第一个参数，可以是路径也可以是require.json中配置的标识key。
+对于require的第一个参数，可以是路径也可以是require.json中配置的标识key，需要注意第一个参数不能相同。
 
 ```javascript
  require("res:buttonFH/button.component","button_fh");
