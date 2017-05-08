@@ -24,7 +24,7 @@ startActivity(it);
 Sprite接收参数：
 
 通过app.json中homeJs配置应用启动入口，通过App类launch事件区分应用启动类型走不同流程跳转。
-关于程序入口的讲解查看[https://gitdocument.exmobi.cn/sprite-begin/ptgnjj.html](https://gitdocument.exmobi.cn/sprite-begin/ptgnjj.html)
+关于程序入口的讲解查看[https://gitdocument.exmobi.cn/sprite-api/ptgnjj.html](https://gitdocument.exmobi.cn/sprite-api/ptgnjj.html)
 
 launch启动参数为Json对象，定义如下：
 
@@ -118,7 +118,7 @@ app.on("launch",function(e,jsonData){
 
 <h2 id="cid_1">Sprite调用第三方</h2> 
 
-根据不同应用提供的调用规则，[通过Native原生程序相关操作类openApp方法调用](https://gitdocument.exmobi.cn/sprite-advanced/native.html)。
+根据不同应用提供的调用规则，[通过Native原生程序相关操作类openApp方法调用](https://gitdocument.exmobi.cn/sprite-api/native.html)。
 
 **Android**  
 
