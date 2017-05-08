@@ -35,9 +35,93 @@
 
 
 
+<h2 id="cid_1">Sprite组件的引用</h2>
+
+**引用方式一：**
+
+**在uixml页面中引用：**
+
+直接在xxx.uixml页面中&lt;script&gt;节点中写组件的路径或者相对路径：  
+
+```javascript
+ //直接写路径
+ require("res:sprite_component/titlebar/titlebar.component");
+//相对uixml页面路径（如：xxx.uixml在src根目录下）   ：
+ require("sprite_component/titlebar/titlebar.component");
+```
+
+xxx.uixml中写：
+
+```html
+<titlebar />
+```
+
+**支持模板里面引用模板组件**
+
+在xxx.component 的&lt;module&gt;节点里面写组件的路径或者相对路径：
+
+**注：** 这里的相对路径是相对xx.component文件的相对路径。
+
+```javascript
+ //直接写路径
+ require("res:sprite_component/titlebar/titlebar.component");
+//相对xxx.component页面路径（如：xxx.componen在sprite_component目录下）   ：
+ require("titlebar/titlebar.component");
+```
+
+xxx.component中写：
+
+```html
+<titlebar />
+```
 
 
-<h2 id="cid_0">Sprite组件开发步骤</h2>  
+**引用方式二：**
+
+在程序入口组件配置文件require.json中进行配置：
+
+```
+{
+    "jsPaths": {
+    },
+    "componentPaths": {
+        "titlebarUI": "res:sprite_component/titlebar/titlebar.component"
+    },
+    "cssPaths": {
+
+    }
+}
+```
+
+然后在xxx.uixml页面中&lt;script&gt;节点或者xxx.component页面中的&lt;module&gt;节点 里面直接引用标识key
+
+```javascript
+ require("titlebarUI");
+```
+
+
+**引用方式三：**
+
+自定义标签名，如果开发者想引用不同路径下的相同标签名，可以为标签定义个别名，比如buttonFH/button.component 和buttonMY/button.component 都有button组件，想同时使用，需要定义一个别名，否者会有冲突。
+
+对于require的第一个参数，可以是路径也可以是require.json中配置的标识key。
+
+```javascript
+ require("res:buttonFH/button.component","button_fh");
+ require("res:buttonMY/button.component","button_my");
+```
+
+页面中对应写法：
+
+```
+<button_fh />
+
+<button_my />
+```
+
+
+
+<h2 id="cid_2">Sprite组件开发步骤</h2>  
 
 下面我以封装一个button控件为例，来说明组件的开发步骤：
 
