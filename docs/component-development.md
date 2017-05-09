@@ -1058,9 +1058,13 @@ mybutton.color.css 文件内容：
 
 上述代码中的this指的就是当前组件，通过this.getElement("xx")可以得到组件内部的布局元素，this也表示当前组件类，可以得到自定义的组件类里面的变量和方法。
 
-注意代码中有很多var copythis = this的写法，是为了在某些监听事件里面用，因为一点进入事件里面，那么this就表示的是当前监听事件的控件对象了。
+注意代码中有很多var copythis = this的写法，是为了在某些监听事件里面用，因为进入事件里面，那么this就表示的是当前监听事件的控件对象了。
 
-在上次代码中还自定义了一个init方法，其目的是为了处理组件上面的属性和样式，由于styleChanged和attrChange，只能通过组件js赋值才会生效，所以自己在init里面通过this.setStyle和this.setAttr人为的触发一下styleChanged和attrChange，让里面的逻辑可以执行一次。否者可能要写两遍相同的逻辑。
+在代码中还自定义了一个init方法，其目的是为了处理组件上面的属性和样式，由于styleChanged和attrChange，只能通过组件js赋值才会生效，所以自己在init里面通过this.setStyle和this.setAttr人为的触发一下styleChanged和attrChange，让里面的逻辑可以执行一次。否者可能要写两遍相同的逻辑。
 
 另外还需要注意的是，由于在处理组件初始布局的时候，不能做刷新操作，但是styleChanged和attrChange里面在某些时候必须要刷新布局，所以定义了一个this.taginit用来标识是第一次初始化组件还是后来通过外部js调用的。
+
+代码中还自定义了一个click方法，这个方法是给外部模拟点击按钮用的。其实组件里面自定义的方法外部都可以调用，只不过有些方法是给内部用的，比如init方法，有些是给外部用的，这个需要开发者在后期组件使用文档中进行说明，哪些方法是可以外部调用。
+
+在组件里面如果要和外部进行通信，最好使用事件里面的fire来触发外部的监听事件，fire可以进行传参，关于fire的用法可以参考 [https://gitdocument.exmobi.cn/sprite-api/ggff.html](https://gitdocument.exmobi.cn/sprite-api/ggff.html)。
 
