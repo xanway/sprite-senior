@@ -468,7 +468,7 @@ mybutton.color.css 文件内容：
 .disable{		
 	background-color:#d9d9d9;
 }
-
+...
 
 .outline{
 	border-width:1dp;	
@@ -503,7 +503,6 @@ mybutton.color.css 文件内容：
 ```
 
 如果马上要在页面看效果可以直接在uixml页面写&lt;mybutton /&gt;，
-
 
 **第四步：组件js逻辑完善**
 
@@ -565,8 +564,6 @@ mybutton.color.css 文件内容：
             this.pathLocation = "";
 
         };
-
-
 
         Button.prototype = {
 
@@ -668,8 +665,6 @@ mybutton.color.css 文件内容：
             init: function () {
 
                 this.taginit = true;
-
-
                 if (this.getAttr("builtInClass") != null) {
 
                     if ((this.getAttr("builtInClass")).indexOf("outline") > -1 && (this.getAttr("builtInClass")).indexOf("submit") < 0 && (this.getAttr("builtInClass")).indexOf("cancel") < 0) {
@@ -702,8 +697,6 @@ mybutton.color.css 文件内容：
                         this.classStyle = this.classStyle + "   cancel outline outline-cancel-text";
                     }
                 }
-
-
                 this.setAttr("readonly", this.getAttr("readonly"));
 
                 //设置按钮的value值
@@ -773,8 +766,6 @@ mybutton.color.css 文件内容：
                     }
 
                 }
-
-
                 if (attrName == "value") {
                     if (attrValue != null) {
                         this.value = attrValue;
@@ -805,9 +796,6 @@ mybutton.color.css 文件内容：
 
                         this.setClassStyle(clasststr, this);
                     }
-
-
-
                 }
 
                 if (attrName == "tip") {
