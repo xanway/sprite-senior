@@ -34,7 +34,7 @@ UI插件继承于FHUIComponent，其中UI插件分为两个部分，一个是视
 
 其中FHUIComponent，FHMultitonComponent，FHSingletomComponent均继承于FHComponent，组件开发时类相关方法说明如下。
 
-**FHUIView 的方法 ：**
+<code>**FHUIView 的方法 ：**</code>  
 
 **init () : void**    <code>初始化函数</code>  
 
@@ -44,14 +44,14 @@ UI插件继承于FHUIComponent，其中UI插件分为两个部分，一个是视
 
 **addSubView (FHDomObject child) : void** 	 <code>插入子节点</code>   
 
-参数: 
+参数:   
 child -- 待添加子节点dom对象
 
 
 **removeChild (FHDomObject child) : void** 	 <code>去除子节点</code> 
 
-参数:
-child -- 待删除子节点dom对象
+参数:    
+child -- 待删除子节点dom对象  
 
 
 **updateAttribute () : void ** 	<code>更新属性</code> 
@@ -62,29 +62,29 @@ child -- 待删除子节点dom对象
 
 **textChanged (boolean isInit) : void **	 <code>文本修改后处理</code>  
 
-参数:
+参数:  
 isInit -- 是否在初始化时调用。若设为 false, 表示通过 js 调用，如果样式影响了布局，需要通知布局刷新。  
 
 
 **attributeChanged (String attrName, String attrValue, boolean isInit) : void** 	 <code>属性修改后处理</code>  
 
-参数: 
-attrName -- 属性名
-attrValue -- 属性值
-isInit -- 是否在初始化时调用。若设为 false, 表示通过 js 调用，如果样式影响了布局，需要通知布局刷新。 
+参数:   
+attrName -- 属性名  
+attrValue -- 属性值  
+isInit -- 是否在初始化时调用。若设为 false, 表示通过 js 调用，如果样式影响了布局，需要通知布局刷新。   
 
 **cssChanged (String styleName, String styleValue, boolean isInit) : boolean** 	 <code>样式修改后处理</code>  
 
-参数: 
-styleName -- 属性名
-styleValue -- 属性值
-isInit -- 是否在初始化时调用。若设为 false, 表示通过 js 调用，如果样式影响了布局，需要通知布局刷新。  
+参数:   
+styleName -- 属性名  
+styleValue -- 属性值  
+isInit -- 是否在初始化时调用。若设为 false, 表示通过 js 调用，如果样式影响了布局，需要通知布局刷新。    
 
 **setBackgroundColor (int bgColor) : void**	 <code>设置背景颜色</code> 
 
 **updateBorder () : boolean**	 <code>更新边框</code>  
 
-返回值: 是否更新
+返回值: 是否更新  
 
 **createChildView () : void**  	 <code>遍历创建所有子节点</code>   
 
@@ -104,18 +104,18 @@ isInit -- 是否在初始化时调用。若设为 false, 表示通过 js 调用�
 
 **measure (YogaNodeAPI yogaNodeAPI, float width, YogaMeasureMode widthMeasureMode, float height, YogaMeasureMode heightMeasureMode) : void**	     <code>控件测量函数</code>   
 
-参数: 
-yogaNodeAPI -- CSS Node API
-width -- 宽度
-widthMeasureMode -- 宽度模式
-height -- 高度
-heightMeasureMode -- 高度模式  
+参数:   
+yogaNodeAPI -- CSS Node API  
+width -- 宽度  
+widthMeasureMode -- 宽度模式  
+height -- 高度  
+heightMeasureMode -- 高度模式    
 
 **setFrame (Size size, Rect rect) : void**	  <code>设置控件Frame</code>  
 
-参数: 
-size -- 控件尺寸
-rect -- 控件矩形区域
+参数:   
+size -- 控件尺寸  
+rect -- 控件矩形区域  
 
 
 **parseStylePath (String oldPath) : String**	 <code>解析样式路径</code> 
@@ -133,15 +133,15 @@ rect -- 控件矩形区域
 **destroy () : void**	   <code>销毁对象</code> 
 
 
-**FHComponent 的方法 ：**  
+<code>**FHComponent 的方法 ：** </code>
 
-on (String[] params) : void	注册事件 
+**on (String[] params) : void**	<code>注册事件 </code>
 
-fire (String[] params) : void	触发事件  
+**fire (String[] params) : void**	<code>触发事件</code>  
 
-off(String[] params) : void	移除事件  
+**off(String[] params) : void**	<code>移除事件 </code> 
 
-getOn(String[] params) : int[]	获取已注册事件函数列表
+**getOn(String[] params) : int[]**  	<code>获取已注册事件函数列表</code>
 
 
 
