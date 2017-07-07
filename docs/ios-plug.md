@@ -34,13 +34,13 @@ IOS采用系统javascriptcore作为js引擎，具有安装包体积小，原生�
 <img src="image/ios_0.png"  width="250"/>
  
 
-<h2 id="cid_2">插件开发</h2>   
+<h2 id="cid_3">插件开发</h2>   
 
 **关于component.xml文件** 
 
  在工程中有一个component.xml,原生组件主要通过此文件反射进行组件扩展，每一个component节点对应一个原生组件，所以component.xml可以包括多个组件(UI组件，单例组件，多例组件)如图所示   
 
-<img src="image/ios_1.png"  width="250"/>
+<img src="image/ios_1.png" />
 
 
 > **component.name**      对于功能组件,name的配置就是uixml使用中require的字段，
@@ -105,6 +105,8 @@ IOS采用系统javascriptcore作为js引擎，具有安装包体积小，原生�
 > **-(NSArray*)getOnEvents:(NSString*)eventName** 	获取监听事件的functions数组(JSValue) 
 > 
 
+<h2 id="cid_4">UI插件开发</h2> 
+
 
 开发过程说明：
 
@@ -114,9 +116,9 @@ IOS采用系统javascriptcore作为js引擎，具有安装包体积小，原生�
 #### 2. 下面以UI组件(fhbutton)开发为例子
 新建一个OC类FHUIButton继承于FHView,如图所示 
 
-<img src="image/ios_2.png"  width="250"/>
+<img src="image/ios_2.png" />
 
-<img src="image/ios_3.png"  width="250"/>
+<img src="image/ios_3.png" />
 
 #### 相关函数说明
 
@@ -343,19 +345,386 @@ IOS采用系统javascriptcore作为js引擎，具有安装包体积小，原生�
 
 ####  3.下面建立js类FHUIButtonComponent，新建一个oc类FHUIButtonComponent，继承于FHUIComponent,如图所示 
 
-<img src="image/ios_5.png"  width="250"/>
+<img src="image/ios_5.png" />
 
-<img src="image/ios_6.png"  width="250"/>
+<img src="image/ios_6.png" />
 
 #### 4.配置工程，找到工程中的component.xml,增加<component name="fhbutton" class="FHUIButton" jsClass="FHUIButtomComponent" /> 
 让程序反射扩展UI组件
 
 #### 5.UIXML中使用插件
-    
-    <fhbutton id="close" value="关闭页面" /> 
-    
-    <fhbutton style="background-color:red;button-color:blue;width:100;height:100" value="css样式" />
+
+```java    
+
+<fhbutton id="close" value="关闭页面" /> 
+<fhbutton style="background-color:red;button-color:blue;width:100;height:100" value="css样式" />
+
+```
 
 #### 6.手机效果
 
    <img src="image/ios_7.png"  width="250"/>
+
+
+<h2 id="cid_5">多例组件开发</h2> 
+
+#### 1.以FHAjaxDemoComponent开发为例子
+
+#### 2.新建一个oc类继承于FHMultitonComponent，如图所示 
+
+<img src="image/ios_8.png"/>
+
+<img src="image/ios_9.png"/>
+
+代码示例：
+
+
+```java  
+// 
+//  FHAjaxComponent.m 
+//  Sprite 
+// 
+//  Created by wjr on 2016/12/26. 
+//  Copyright © 2016年 Fiberhome. All rights reserved. 
+// 
+ 
+#import "FHAjaxDemoComponent.h" 
+#import <AFNetworking/AFNetworking.h> 
+#import <SpriteFramework/FHJsonUtil.h> 
+#import <SpriteFramework/FHBackGourndEventHandler.h> 
+@implementation FHAjaxDemoComponent 
+{ 
+    NSString* _url; 
+} 
+ 
+-(void)send:(JSValue*)callback 
+{ 
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager]; 
+    //不设置会报-1016或者会有编码问题 
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer]; 
+ 
+    //发送请求 
+    [manager GET:_url parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) { 
+         
+    } 
+         success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) { 
+              
+             NSData* data = responseObject; 
+             NSString* content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]; 
+             NSDictionary* dic = [FHJsonUtil stringToJson:content]; 
+              
+             NSString* text = [NSString stringWithFormat:@"%@ %@ %@ %@",dic[@"country"],dic[@"province"],dic[@"city"],dic[@"district"]]; 
+              
+             FHPerformBlockOnMainThread(^{ 
+                 //对于javascriptcode NSDictionary对应json 
+                 NSDictionary* dic = [[NSDictionary alloc] initWithObjectsAndKeys:@(0),@"code",text,@"text", nil]; 
+                 NSArray* ary = [[NSArray alloc] initWithObjects:dic, nil]; 
+                 //调用JS异步回调，只能在主线程中调用 
+                 [callback callWithArguments:ary]; 
+                 ary = nil; 
+                 dic = nil; 
+             }); 
+         } 
+         failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull   error) { 
+              
+             FHPerformBlockOnMainThread(^{ 
+                 //对于javascriptcode NSDictionary对应json 
+                 NSDictionary* dic = [[NSDictionary alloc] initWithObjectsAndKeys:@(-1),@"code",[error localizedDescription],@"text", nil]; 
+                 NSArray* ary = [[NSArray alloc] initWithObjects:dic, nil]; 
+                 //调用JS异步回调，只能在主线程中调用 
+                 [callback callWithArguments:ary]; 
+                 ary = nil; 
+                 dic = nil; 
+             }); 
+              
+         }]; 
+} 
+ 
+-(void)setUrl:(NSString *)url 
+{ 
+    //js设置url的事件 
+    _url = url; 
+} 
+-(NSString*)url 
+{ 
+     //js获取url的事件 
+    return _url; 
+} 
+ 
+ 
+@end 
+
+
+```
+
+#### 3.配置工程，找到工程中的component.xml,
+增加如下代码，让程序反射扩展UI组件
+
+```java
+<component name="fhajax" class="FHAjaxDemoComponent" jsClass="FHAjaxDemoComponent"/> 
+
+```
+
+
+#### 4.UIXML前端界面中使用:
+
+```js
+var Ajax = require("fhajax"); 
+var ajax1 = new Ajax(); 
+var ajax2 = new Ajax(); 
+ajax1.url = "http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=json&ip=218.94.117.236"; 
+ajax2.url = "http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=json&ip=60.161.76.34"; 
+ 
+window.on("loaded", function() { 
+    var close = document.getElement("close"); 
+    close.on("click", function(e) { 
+        closePage(); 
+    }); 
+ 
+    var test = document.getElement("test"); 
+    test.on("click", function(e) { 
+        ajax1.send(callback); 
+        ajax2.send(callback); 
+    }); 
+}); 
+ 
+function callback(json) 
+{ 
+    alert(json.code + " " + json.text); 
+} 
+
+```
+
+
+<h2 id="cid_6">单例组件开发</h2> 
+
+#### 1.以FHAsynCallbackDemoComponent开发为例子
+
+#### 2.新建一个oc类继承于FHSingletonComponent,如图所示
+
+<img src="image/ios_10.png"/>
+
+#### 3.代码示例
+
+ ```java
+// 
+//  FHCameraComponent.m 
+//  Sprite 
+// 
+//  Created by dyc on 16/11/8. 
+//  Copyright © 2016年 Fiberhome. All rights reserved. 
+// 
+ 
+#import "FHAsynCallbackDemoComponent.h" 
+#import <MobileCoreServices/UTCoreTypes.h> 
+#import <UIKit/UIImage.h> 
+#import <SpriteFramework/FHFileUtil.h> 
+#import <SpriteFramework/FHDeviceUtil.h> 
+#import <SpriteFramework/UIImage+Sprite.h> 
+#import <SpriteFramework/FHPageInstance.h> 
+ 
+ 
+@interface FHAsynCallbackDemoComponent() 
+{ 
+    JSValue* callbackCamera; //回调方法 
+    NSDictionary* jsonData;//camera参数设置 
+} 
+ 
+@end 
+ 
+@implementation FHAsynCallbackDemoComponent 
+ 
+#pragma mark - 多态方法（覆盖父类中方法的） 
+-(instancetype)initWithPage:(FHPageInstance*)pageInstance; 
+{ 
+    self = [super initWithPage: pageInstance]; 
+    if(self) 
+    { 
+        callbackCamera = nil; 
+        jsonData = nil; 
+    } 
+    return self; 
+} 
+ 
+//多态方法（覆盖父类中方法的） 
+//如果需要，可在此处处理资源释放等操作 
+-(void)destroy 
+{ 
+     
+} 
+ 
+#pragma mark - 接口方法 
+-(void)start:(JSValue*)json value:(JSValue*)callbackFunc 
+{ 
+    if(![FHDeviceUtil isDeviceSupportCamera]) 
+        return; 
+ 
+    if(nil == json || !json.isObject || nil == callbackFunc || !callbackFunc.isObject) 
+        return; 
+ 
+    NSDictionary* info = [json toDictionary]; 
+     
+    jsonData = [[NSDictionary alloc] initWithDictionary: info]; 
+    callbackCamera = callbackFunc; 
+     
+    NSString* jsonType = jsonData[@"type"]; 
+    if (jsonType == nil) 
+        return; 
+     
+    if (![jsonType isEqualToString:@"camera"]) 
+        return; 
+ 
+    //处理参数并启动相机 
+    UIImagePickerControllerSourceType type = UIImagePickerControllerSourceTypeCamera; 
+ 
+    if(![UIImagePickerController isSourceTypeAvailable: type]) 
+    { 
+        return ; 
+    } 
+ 
+    UIImagePickerController* picker  =  [[UIImagePickerController alloc] init]; 
+    picker.sourceType = type; 
+    picker.delegate    = self; 
+    //摄像头拍照片 
+    picker.mediaTypes = [NSArray arrayWithObject:(NSString*)kUTTypeImage]; 
+         
+    if(nil != picker) 
+    { 
+        if([[[UIDevice currentDevice] systemVersion] floatValue]>=8.0) { 
+             
+            picker.modalPresentationStyle=UIModalPresentationOverCurrentContext; 
+             
+        } 
+        //通过页面所在的viewcontroller来弹出拍照界面 
+        [self.pageInstance.viewController presentViewController: picker animated:YES completion:^{ 
+             
+        }]; 
+    } 
+} 
+ 
+#pragma mark - 内部方法 
+-(void)doCallback:(NSDictionary*)data 
+{ 
+    if (callbackCamera && callbackCamera.isObject) 
+    { 
+        NSArray* ary = [[NSArray alloc] initWithObjects: data, nil]; 
+        [callbackCamera callWithArguments: ary]; 
+    } 
+} 
+ 
+#pragma mark - UIImagePickerControllerDelegate 
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info 
+{ 
+    [picker dismissViewControllerAnimated:YES completion:^{ 
+       
+        NSString * path = nil; 
+        id value = [jsonData objectForKey: @"path"]; 
+        if(value) 
+        { 
+            path = [[NSString alloc] initWithFormat: @"%@", value]; 
+        } 
+        //转换文件路径 
+        //传来的路径往往是res:开头（相对路径） 
+        NSString* pathDest = [FHFileUtil getFilePath: path]; 
+ 
+        NSLog(@"info . %@", info); 
+         
+        BOOL bRet = NO; 
+        //photo 
+        { 
+            UIImage* image = [info valueForKey:UIImagePickerControllerOriginalImage]; 
+ 
+            //读取图片数据 
+            //非png图片 
+            NSData* data = UIImageJPEGRepresentation(image, 1); 
+             
+            //将图片写入目录 
+            bRet = [FHFileUtil writeNSDataFile: pathDest content: data isAppend: NO]; 
+        } 
+         
+        //回调参数 
+        NSMutableDictionary* dic = [[NSMutableDictionary alloc] init]; 
+        [dic setObject: [NSNumber numberWithInt: bRet ? 0 : -1] forKey: @"code"]; 
+        if(bRet) 
+        { 
+            [dic setObject: pathDest forKey: @"path"]; 
+        } 
+        //回调 
+        [self doCallback: dic]; 
+ 
+    }]; 
+} 
+ 
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker 
+{ 
+    [picker dismissViewControllerAnimated:YES completion:^{ 
+        //回调参数 
+        NSMutableDictionary* dic = [[NSMutableDictionary alloc] init]; 
+        [dic setObject: [NSNumber numberWithInt: -1] forKey: @"code"]; 
+         
+        //回调 
+        [self doCallback: dic]; 
+    }]; 
+} 
+ 
+@end 
+
+```
+
+#### 4.配置工程
+
+找到工程中的component.xml,增加如下代码，让程序反射扩展UI组件
+
+``` js
+<component name="fhcamera" class="FHAsynCallbackDemoComponent" jsClass="FHAsynCallbackDemoComponent"/>
+
+```
+
+#### 5.UIXML界面中使用
+
+```js
+ 
+var fhcamera = require("fhcamera"); 
+window.on("loaded", function() { 
+    var close = document.getElement("close"); 
+    close.on("click", function(e) { 
+        closePage(); 
+    }); 
+ 
+    var test = document.getElement("test"); 
+    test.on("click", function(e) { 
+      var json = {}; 
+      json.type = "camera"; 
+      json.path = "res:image/1.jpg"; 
+      fhcamera.start(json,callback); 
+    }); 
+}); 
+ 
+function callback(json) 
+{ 
+  alert(json.code + " " + json.path); 
+} 
+
+
+```
+
+
+<h2 id="cid_7">上传EDN</h2> 
+
+1：插件开发及自测完成后，把源码或者生成.a文件，图片资源、framework等放置到文件夹中；
+
+2：该文件夹中放置插件描述文件component.xml，属性定义如下表：
+
+>**name** uixml使用中require的字段 如：FHAsynCallbackDemoComponent插件，使用时用require("fhcamera")。
+对于UI插件name就为uixml中ui节点的tagName，以FHUIButtomComponent为示例，在uixml中就可以写
+
+```jsp
+<fh-button value="123"/>
+```
+
+>**jsClass** jsComponent对应的类名称
+class UI插件：视图控件对应的类名
+功能插件：同jsClass
+
+<img src="image/android_1.png"/>
+
