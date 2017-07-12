@@ -799,7 +799,7 @@ function callback(json)
 
 ```
 
-<h2 id="cid_6">上传EDN</h2>    
+<h2 id="cid_6">上传EDN</h2>     
 
 1：插件开发及自测完成后，生成aar文件，放置于文件夹中  
 
