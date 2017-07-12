@@ -26,7 +26,7 @@ UI插件继承于FHUIComponent，其中UI插件分为两个部分，一个是视
 <img src="image/android_0.png"  width="250"/>
 
 
-<h2 id="cid_2">插件开发</h2>   
+<h2 id="cid_2">插件开发说明</h2>   
 
 **基础类说明** 
 
@@ -239,7 +239,7 @@ UI插件继承于FHUIComponent，其中UI插件分为两个部分，一个是视
 > resultCode：由上层Activity通过其setResult()方法返回
 > data：一个Intent对象，带有返回的数据  
 
-**UI插件开发**  
+<h2 id="cid_3">UI插件开发</h2>   
 
 开发过程说明：
 
@@ -531,7 +531,9 @@ catch (ClassNotFoundException e)
 
 ```
 
-多例功能插件开发:
+
+<h2 id="cid_4">多例功能插件开发</h2>   
+
 
 1：以FHAjaxDemoComponent开发为示例 
 
@@ -604,8 +606,8 @@ test.on("click", function(e) {
 
 ```
 
+<h2 id="cid_5">单例功能插件开发</h2>   
 
-单例功能插件开发:
 
 1：以FHAsynCallbackDemoComponent开发为示例。  
 
@@ -797,7 +799,7 @@ function callback(json)
 
 ```
 
-<h2 id="cid_3">上传EDN</h2>    
+<h2 id="cid_6">上传EDN</h2>    
 
 1：插件开发及自测完成后，生成aar文件，放置于文件夹中  
 
