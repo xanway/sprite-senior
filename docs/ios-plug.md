@@ -178,7 +178,7 @@ IOS采用系统javascriptcore作为js引擎，具有安装包体积小，原生�
 //  Sprite 
 // 
 //  Created by wjr on 16/12/20. 
-//  Copyright © 2016年 Fiberhome. All rights reserved. 
+//  Copyright © 2013-2018，XANWAY CO.,LTD. All rights reserved. 
 // 
  
 #import "FHUIButton.h" 
@@ -385,7 +385,7 @@ IOS采用系统javascriptcore作为js引擎，具有安装包体积小，原生�
 //  Sprite 
 // 
 //  Created by wjr on 2016/12/26. 
-//  Copyright © 2016年 Fiberhome. All rights reserved. 
+//  Copyright © 2013-2018，XANWAY CO.,LTD. All rights reserved. 
 // 
  
 #import "FHAjaxDemoComponent.h" 
@@ -512,7 +512,7 @@ function callback(json)
 //  Sprite 
 // 
 //  Created by dyc on 16/11/8. 
-//  Copyright © 2016年 Fiberhome. All rights reserved. 
+//  Copyright © 2013-2018，XANWAY CO.,LTD. All rights reserved. 
 // 
  
 #import "FHAsynCallbackDemoComponent.h" 
